@@ -48,7 +48,6 @@ public class Blocks {
 			//now do stuff with all the possible orientations of the blocks
 			
 			
-			
 			readIn.close();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to write to outfile
 			
@@ -75,6 +74,12 @@ public class Blocks {
 		int length;
 		int height;
 		
+		/**
+		 * width should be less than length
+		 * @param width
+		 * @param length
+		 * @param height
+		 */
 		public Block(int width, int length, int height) {
 			this.width = width;
 			this.length = length;
