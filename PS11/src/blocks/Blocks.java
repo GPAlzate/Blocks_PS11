@@ -2,6 +2,7 @@ package blocks;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 /**
@@ -46,7 +47,7 @@ public class Blocks {
 			
 			ArrayList<Block> enumBlock = runner.getVariations(blockTypes);
 			//now do stuff with all the possible orientations of the blocks
-			
+			//sort the blocks?
 			
 			readIn.close();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to write to outfile
@@ -60,12 +61,19 @@ public class Blocks {
 	
 	/**
 	 * method which, given a list of blocks, returns a list with all possible block
-	 * configurations
+	 * configurations by looping through each given block, finding its 3 rotations,
+	 * and adding it to our list 
 	 * 
 	 * @param inputBlocks
 	 * @return
 	 */
 	public ArrayList<Block> getVariations(Block[] inputBlocks){
+		ArrayList<Block> allBlocks = new ArrayList<Block>();
+		for(int i = 0; i < inputBlocks.length; i++) {
+			allBlocks.add(inputBlocks[i].rotation1());
+			allBlocks.add(inputBlocks[i].rotation2());
+			allBlocks.add(inputBlocks[i].rotation3());
+		}
 		return new ArrayList<Block>();
 	}
 	
