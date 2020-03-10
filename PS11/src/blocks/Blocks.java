@@ -19,6 +19,8 @@ import java.util.Scanner;
  */
 public class Blocks {
 	
+	ArrayList<Block> setOfBlocks = new ArrayList<>();
+	
 	/**
 	 * reads in input and 
 	 * runs the algorithm to find the tallest possible tower using the given blocks
@@ -46,11 +48,11 @@ public class Blocks {
 				blockTypes[i] = runner.new Block(w, l, h);
 			}
 			
-			ArrayList<Block> enumBlock = runner.getVariations(blockTypes);
+			runner.setOfBlocks = runner.getVariations(blockTypes);
 			
 			//now do stuff with all the possible orientations of the blocks
 			//sort the blocks in order from largest area to smallest
-			Collections.sort(enumBlock);
+			Collections.sort(runner.setOfBlocks);
 			
 			int maxHeight = 0; //run alg here
 			
@@ -130,34 +132,50 @@ public class Blocks {
 	
 	/**
 	 * Recursive solution in progress
+	 * Given a block b which is on top of a stack of boxes,
+	 * finds max possible height of tower
 	 * 
-	 * @param allBlocks - a list of block sorted from largest base area to smallest
-	 * @param j
+	 */
+	public int maxHeightRecur(Block b) {
+		int bIndex = setOfBlocks.indexOf(b);
+		
+		//if largest block is on "top", then maxHeight is simply its height
+		if(bIndex == 0) {
+			return b.height();
+		}
+		else if(bIndex == 1) {
+		}
+		
+		int maxHeight = 0;
+		int possibleMax = 0;
+		
+		//loops through all blocks with larger base area than Block b
+		//if they can be stacked underneath b
+		for(int j = 0; j < bIndex; j++) {
+			Block blockBelow = setOfBlocks.get(j);
+			if(b.stackableOn(blockBelow)) {
+				possibleMax = b.height() + maxHeightRecur(blockBelow);
+			}
+			if(possibleMax > maxHeight) {
+				maxHeight = possibleMax;
+			}
+		}
+		
+		return maxHeight;
+	}
+	
+	/**
+	 * finds max height of all maxHeights for each block, assuming they are stored in an arrayList
 	 * @return
 	 */
-	public int maxHeightRecur(ArrayList<Block> allBlocks, int j) {
-		
-		//base case where list is empty
-		if(j >= allBlocks.size()) {
-			return 0;
-		}
-		//base case where list has 1 element left
-		else if(j == allBlocks.size() -1) {
-			if(allBlocks.get(j).stackableOn(allBlocks.get(j-1))){
-				return allBlocks.get(j).height();
-			}
-			else {
-				return 0;
+	public int finalMaxHeight(ArrayList<Integer> maxHeights) {
+		int max = 0;
+		for(int i = 0; i < maxHeights.size(); i++) {
+			if(maxHeights.get(i) > max) {
+				max = maxHeights.get(i);
 			}
 		}
-		int currentMax = 0;
-		for(int i = j; i < allBlocks.size(); i++) {
-			int possibleMax = allBlocks.get(i).height() + maxHeightRecur(allBlocks, j+1);
-			if(possibleMax > currentMax) {
-				currentMax = possibleMax;
-			}
-		}
-		return currentMax;
+		return max;
 	}
 	
 	/**
@@ -178,7 +196,7 @@ public class Blocks {
 		 * @param width
 		 * @param height
 		 */
-		public Block(int length, int width,int height) {
+		public Block(int length, int width, int height) {
 			this.length = length;
 			this.width = width;
 			this.height = height;
@@ -200,13 +218,14 @@ public class Blocks {
 			return area;
 		}
 		
-		/*
+		/**
 		 * allows for built-in sorting of the blocks
 		 * in order from largest area to smallest
 		 */
 		public int compareTo(Block other) {
 			return (other.area - this.area()); //returns neg number if this block's area is bigger, pos if smaller, and 0 if equal
 		}
+		
 		/**
 		 * given a block, returns true if this block is stackable on top of
 		 * the other block
@@ -215,7 +234,7 @@ public class Blocks {
 			return (width < other.width() && length < other.length());
 		}
 		
-		/*
+		/**
 		 * returns a new block rotated such that the 1st value inputed
 		 * represents the height and
 		 * 
@@ -229,7 +248,7 @@ public class Blocks {
 			return new Block(height, width, length);
 		}
 		
-		/*
+		/**
 		 * returns a new block rotated such that the 2nd value inputed
 		 * represents the height and
 		 * 
@@ -243,7 +262,7 @@ public class Blocks {
 			return new Block(height, length, width);
 		}
 		
-		/*
+		/**
 		 * returns a new block rotated such that the 3rd value inputed
 		 * represents the height and
 		 * 
