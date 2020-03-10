@@ -69,29 +69,35 @@ public class Blocks {
 		return new ArrayList<Block>();
 	}
 	
+	/**
+	 * Class block to represent rectangular building blocks
+	 * with base dimensions of length x width and a height dimension
+	 * 
+	 */
 	class Block{
-		int width;
 		int length;
+		int width;
 		int height;
 		
 		/**
-		 * width should be less than length
-		 * @param width
+		 * length should be <= width
+		 * 
 		 * @param length
+		 * @param width
 		 * @param height
 		 */
-		public Block(int width, int length, int height) {
-			this.width = width;
+		public Block(int length, int width,int height) {
 			this.length = length;
+			this.width = width;
 			this.height = height;
-		}
-		
-		public int width() {
-			return width;
 		}
 		
 		public int length() {
 			return length;
+		}
+		
+		public int width() {
+			return width;
 		}
 		
 		public int height() {
@@ -105,7 +111,48 @@ public class Blocks {
 		public boolean stackableOn(Block other) {
 			return (width < other.width() && length < other.length());
 		}
-		//maybe add method(s) for getting different configurations of one block?
+		
+		/*
+		 * returns a new block rotated such that the 1st value inputed
+		 * represents the height and
+		 * 
+		 * the other two dimensions, the base dimensions, are placed
+		 * such that the 1st dimension <= 2nd dimension
+		 */
+		public Block rotation1() {
+			if(height >= width) {
+				return new Block(width, height, length);
+			}
+			return new Block(height, width, length);
+		}
+		
+		/*
+		 * returns a new block rotated such that the 2nd value inputed
+		 * represents the height and
+		 * 
+		 * the other two dimensions, the base dimensions, are placed
+		 * such that the 1st dimension <= 2nd dimension
+		 */
+		public Block rotation2() {
+			if(height >= length) {
+				return new Block(length, height, width);
+			}
+			return new Block(height, length, width);
+		}
+		
+		/*
+		 * returns a new block rotated such that the 3rd value inputed
+		 * represents the height and
+		 * 
+		 * the other two dimensions, the base dimensions, are placed
+		 * such that the 1st dimension <= 2nd dimension
+		 */
+		public Block rotation3() {
+			if(width >= length) {
+				return new Block(length, width, height);
+			}
+			return new Block(width, length, height);
+		}
 		
 	}
 }
