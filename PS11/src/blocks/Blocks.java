@@ -143,8 +143,12 @@ public class Blocks {
 		}
 		//base case where list has 1 element left
 		else if(j == allBlocks.size() -1) {
-			if(allBlocks.get(j).stackableOn()
-			return allBlocks.get(j).height();
+			if(allBlocks.get(j).stackableOn(allBlocks.get(j-1))){
+				return allBlocks.get(j).height();
+			}
+			else {
+				return 0;
+			}
 		}
 		int currentMax = 0;
 		for(int i = j; i < allBlocks.size(); i++) {
