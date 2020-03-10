@@ -237,5 +237,11 @@ public class Blocks {
 			return new Block(width, length, height);
 		}
 		
+		/**
+		 * return a string representation of Block, which gives its three dimensions
+		 */
+		public String toString() {
+			return length + " " + width + " " + height;
+		}
 	}
 }
