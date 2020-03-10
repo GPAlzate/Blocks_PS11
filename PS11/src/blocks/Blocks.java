@@ -55,10 +55,22 @@ public class Blocks {
 			//sort the blocks in order from largest area to smallest
 			Collections.sort(runner.setOfBlocks);
 			
+			//for debugging
+			for(int i = 0; i < runner.setOfBlocks.size(); i++) {
+				System.out.println(runner.setOfBlocks.get(i));
+			}
+			
+			
 			ArrayList<Integer> maxHeights = new ArrayList<Integer>();
 			for(int i = 0; i < runner.setOfBlocks.size(); i++) {
 				maxHeights.add(runner.maxHeightRecur(runner.setOfBlocks.get(i)));
 			}
+			
+			/* for debugging
+			for(int i = 0; i < maxHeights.size(); i++) {
+				System.out.println(maxHeights.get(i));
+			}*/
+			
 			int maxHeight = runner.finalMaxHeight(maxHeights); //run alg here
 			System.out.println(maxHeight);
 			
@@ -102,7 +114,7 @@ public class Blocks {
 			allBlocks.add(inputBlocks[i].rotation2());
 			allBlocks.add(inputBlocks[i].rotation3());
 		}
-		return new ArrayList<Block>();
+		return allBlocks;
 	}
 	
 	public int maxHeightRecurK(ArrayList<Block> blocksInTower) {
@@ -194,7 +206,7 @@ public class Blocks {
 		int length;
 		int width;
 		int height;
-		int area;
+		int area; //area of base
 		
 		/**
 		 * length should be <= width
@@ -207,6 +219,7 @@ public class Blocks {
 			this.length = length;
 			this.width = width;
 			this.height = height;
+			this.area = length * width; 
 		}
 		
 		public int length() {
