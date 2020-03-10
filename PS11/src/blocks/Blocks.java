@@ -169,7 +169,7 @@ public class Blocks {
 		
 		//loops through all blocks with larger base area than Block b
 		//if they can be stacked underneath b
-		for(int j = 0; j < bIndex; j++) {
+		for(int j = bIndex-1; j > -1; j--) {
 			Block blockBelow = setOfBlocks.get(j);
 			if(b.stackableOn(blockBelow)) {
 				possibleMax = b.height() + maxHeightRecur(blockBelow);
