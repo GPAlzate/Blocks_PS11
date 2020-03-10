@@ -2,7 +2,7 @@ package blocks;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -20,11 +20,13 @@ import java.util.Scanner;
 public class Blocks {
 	
 	/**
+	 * reads in input and 
 	 * runs the algorithm to find the tallest possible tower using the given blocks
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		File infile = new File(args[0]);
 		File outfile = new File(args[1]);
@@ -39,15 +41,16 @@ public class Blocks {
 			for(int i = 0; i < arrayLength; i++) {
 				String currentBlock = readIn.next();
 				String[] dimensions = currentBlock.split(" ");
-				int w = Integer.parseInt(dimensions[0]);
-				int l = Integer.parseInt(dimensions[1]);
+				int l = Integer.parseInt(dimensions[0]);
+				int w = Integer.parseInt(dimensions[1]);
 				int h = Integer.parseInt(dimensions[2]);
 				blockTypes[i] = runner.new Block(w, l, h);
 			}
 			
 			ArrayList<Block> enumBlock = runner.getVariations(blockTypes);
 			//now do stuff with all the possible orientations of the blocks
-			//sort the blocks?
+			//sort the blocks in order from largest area to smallest
+			Collections.sort(enumBlock);
 			
 			readIn.close();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to write to outfile
@@ -77,15 +80,20 @@ public class Blocks {
 		return new ArrayList<Block>();
 	}
 	
+	public int maxHeightOfTower() {
+		return 0;
+	}
+	
 	/**
 	 * Class block to represent rectangular building blocks
 	 * with base dimensions of length x width and a height dimension
 	 * 
 	 */
-	class Block{
+	class Block implements Comparable<Block>{
 		int length;
 		int width;
 		int height;
+		int area;
 		
 		/**
 		 * length should be <= width
@@ -112,6 +120,17 @@ public class Blocks {
 			return height;
 		}
 		
+		public int area() {
+			return area;
+		}
+		
+		/*
+		 * allows for built-in sorting of the blocks
+		 * in order from largest area to smallest
+		 */
+		public int compareTo(Block other) {
+			return (other.area - this.area()); //returns neg number if this block's area is bigger, pos if smaller, and 0 if equal
+		}
 		/**
 		 * given a block, returns true if this block is stackable on top of
 		 * the other block
