@@ -25,8 +25,8 @@ public class Blocks {
 	 * reads in input and 
 	 * runs the algorithm to find the tallest possible tower using the given blocks
 	 * 
-	 * @param args
-	 * @throws IOException
+	 * @param args command line arguments
+	 * @throws IOException if file not found
 	 */
 	public static void main(String[] args) throws IOException {
 		File infile = new File(args[0]);
@@ -105,7 +105,7 @@ public class Blocks {
 	 * and adding it to our list 
 	 * 
 	 * @param inputBlocks
-	 * @return
+	 * @return an arrayList of all possible blocks to use in the tower
 	 */
 	public ArrayList<Block> getVariations(Block[] inputBlocks){
 		ArrayList<Block> allBlocks = new ArrayList<Block>();
@@ -151,7 +151,7 @@ public class Blocks {
 	}
 	
 	/**
-	 * Recursive solution in progress
+	 * Recursive solution
 	 * Given a block b which is on top of a stack of boxes,
 	 * finds max possible height of tower
 	 * 
@@ -222,25 +222,37 @@ public class Blocks {
 			this.area = length * width; 
 		}
 		
+		/**
+		 * @return the length of a block
+		 */
 		public int length() {
 			return length;
 		}
 		
+		/**
+		 * @return the width of a block
+		 */
 		public int width() {
 			return width;
 		}
 		
+		/**
+		 * @return the height of a block
+		 */
 		public int height() {
 			return height;
 		}
 		
+		/**
+		 * @return the base area of a block
+		 */
 		public int area() {
 			return area;
 		}
 		
 		/**
 		 * allows for built-in sorting of the blocks
-		 * in order from largest area to smallest
+		 * in order from largest base area to smallest
 		 */
 		public int compareTo(Block other) {
 			return (other.area - this.area()); //returns neg number if this block's area is bigger, pos if smaller, and 0 if equal
