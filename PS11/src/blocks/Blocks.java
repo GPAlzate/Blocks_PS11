@@ -79,6 +79,39 @@ public class Blocks {
 		return new ArrayList<Block>();
 	}
 	
+	public int maxHeightRecurK(ArrayList<Block> blocksInTower) {
+		
+		// Base case where list is empty
+		if (blocksInTower.isEmpty()) {
+			return 0;
+		}
+		
+		// Base case where there is only 1 block
+		else if (blocksInTower.size() == 1) {
+			return (blocksInTower.get(0).height);
+		}
+		
+		else {
+			
+			// The current block we are working with
+			Block curBlock = blocksInTower.get(blocksInTower.size() - 1);
+			
+			// If the current block is greater in area than the last block on the tower, add it to the tower
+			if (curBlock.area > blocksInTower.get(blocksInTower.size() - 2).area) {
+				
+				// Adds the height of this block to the height of the tower
+				return curBlock.height + maxHeightRecurK((ArrayList<Block>) blocksInTower.subList(0, blocksInTower.size() - 2));
+			}
+			
+			// If the current block is not greater in area than the last block on the tower, the height of the tower remains the same
+			else {
+				
+				// Returns the height of the tower without this block
+				return maxHeightRecurK((ArrayList<Block>) blocksInTower.subList(0, blocksInTower.size() - 2));
+			}
+		}
+	}
+	
 	/**
 	 * Recursive solution in progress
 	 * 
