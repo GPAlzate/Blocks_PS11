@@ -35,13 +35,14 @@ public class Blocks {
 		
 		try {
 			Scanner readIn = new Scanner(infile); //to read in from infile
-			int arrayLength= readIn.nextInt();
+			int arrayLength =  Integer.valueOf(readIn.nextLine());
 			Block[] blockTypes = new Block[arrayLength];
 			
 			//read in the blocks from the file
 			for(int i = 0; i < arrayLength; i++) {
-				String currentBlock = readIn.next();
+				String currentBlock = readIn.nextLine();
 				String[] dimensions = currentBlock.split(" ");
+				
 				int l = Integer.parseInt(dimensions[0]);
 				int w = Integer.parseInt(dimensions[1]);
 				int h = Integer.parseInt(dimensions[2]);
@@ -54,8 +55,14 @@ public class Blocks {
 			//sort the blocks in order from largest area to smallest
 			Collections.sort(runner.setOfBlocks);
 			
-			int maxHeight = 0; //run alg here
+			ArrayList<Integer> maxHeights = new ArrayList<Integer>();
+			for(int i = 0; i < runner.setOfBlocks.size(); i++) {
+				maxHeights.add(runner.maxHeightRecur(runner.setOfBlocks.get(i)));
+			}
+			int maxHeight = runner.finalMaxHeight(maxHeights); //run alg here
+			System.out.println(maxHeight);
 			
+			/*
 			ArrayList<Block> tallestTowerBlocks = new ArrayList<>(); //store tallest blocks somehow in an array
 			int numBlocks = tallestTowerBlocks.size();
 			
@@ -73,6 +80,7 @@ public class Blocks {
 			}
 			
 			writer.close();
+			*/
 		}
 		catch (FileNotFoundException e){
 			e.printStackTrace();
@@ -143,9 +151,7 @@ public class Blocks {
 		if(bIndex == 0) {
 			return b.height();
 		}
-		else if(bIndex == 1) {
-		}
-		
+
 		int maxHeight = 0;
 		int possibleMax = 0;
 		
@@ -156,6 +162,7 @@ public class Blocks {
 			if(b.stackableOn(blockBelow)) {
 				possibleMax = b.height() + maxHeightRecur(blockBelow);
 			}
+			
 			if(possibleMax > maxHeight) {
 				maxHeight = possibleMax;
 			}
@@ -166,7 +173,7 @@ public class Blocks {
 	
 	/**
 	 * finds max height of all maxHeights for each block, assuming they are stored in an arrayList
-	 * @return
+	 * @return actual max height of all the blocks
 	 */
 	public int finalMaxHeight(ArrayList<Integer> maxHeights) {
 		int max = 0;
