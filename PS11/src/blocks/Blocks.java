@@ -26,7 +26,6 @@ public class Blocks {
 	 * @param args
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		File infile = new File(args[0]);
 		File outfile = new File(args[1]);
@@ -80,8 +79,32 @@ public class Blocks {
 		return new ArrayList<Block>();
 	}
 	
-	public int maxHeightOfTower() {
-		return 0;
+	/**
+	 * Recursive solution in progress
+	 * 
+	 * @param allBlocks - a list of block sorted from largest base area to smallest
+	 * @param j
+	 * @return
+	 */
+	public int maxHeightRecur(ArrayList<Block> allBlocks, int j) {
+		
+		//base case where list is empty
+		if(j >= allBlocks.size()) {
+			return 0;
+		}
+		//base case where list has 1 element left
+		else if(j == allBlocks.size() -1) {
+			if(allBlocks.get(j).stackableOn()
+			return allBlocks.get(j).height();
+		}
+		int currentMax = 0;
+		for(int i = j; i < allBlocks.size(); i++) {
+			int possibleMax = allBlocks.get(i).height() + maxHeightRecur(allBlocks, j+1);
+			if(possibleMax > currentMax) {
+				currentMax = possibleMax;
+			}
+		}
+		return currentMax;
 	}
 	
 	/**
