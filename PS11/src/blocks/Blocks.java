@@ -47,12 +47,28 @@ public class Blocks {
 			}
 			
 			ArrayList<Block> enumBlock = runner.getVariations(blockTypes);
+			
 			//now do stuff with all the possible orientations of the blocks
 			//sort the blocks in order from largest area to smallest
 			Collections.sort(enumBlock);
 			
+			int maxHeight = 0; //run alg here
+			
+			ArrayList<Block> tallestTowerBlocks = new ArrayList<>(); //store tallest blocks somehow in an array
+			int numBlocks = tallestTowerBlocks.size();
+			
 			readIn.close();
+			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to write to outfile
+			
+			writer.write(numBlocks); //first line of outfile should be number of blocks in tallest tower
+			writer.newLine();
+			
+			// loop which writes out all the blocks in the tallest possible tower to the outfile
+			for(int i = 0; i < numBlocks; i++) {
+				writer.write(tallestTowerBlocks.get(i).toString());
+				writer.newLine();
+			}
 			
 			writer.close();
 		}
