@@ -269,7 +269,7 @@ public class Blocks {
 	 * @return the max height of the tower
 	 */
 	public int maxHeightDPM(Block b) {
-		int numBlocks = setOfBlocks.indexOf(b);
+		int numBlocks = setOfBlocks.indexOf(b) + 1;
 		
 		// Initializing DP table
 		int[] dp = new int[numBlocks];
@@ -278,8 +278,6 @@ public class Blocks {
 		//Mercy: should we instead go bottom to top? since
 		//top of tower is our solution - unsure though
 		for (int i = 0; i < dp.length; i++) {
-
-			
 
 			// Current block
 			Block curBlock = setOfBlocks.get(i);
