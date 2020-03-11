@@ -284,7 +284,7 @@ public class Blocks {
 			System.out.println("Current block: " + curBlock);
 			
 			//initialize current block's height to be its max Height in the DP table
-			int max = dp[i] = curBlock.height();;
+			int max= curBlock.height();
 
 			// Going through the previous blocks
 			for (int j = i-1; j >= 0; j--) {
