@@ -292,6 +292,7 @@ public class Blocks {
 
 			// initialize current block's height to be its max Height in the DP table
 			int max = curBlock.height();
+			dp[i] = new BlockPair(max, i);
 
 			// Going through the previous blocks
 			for (int j = i - 1; j >= 0; j--) {
@@ -304,6 +305,7 @@ public class Blocks {
 					// Checking if this is the new max for the current block
 					if (curBlock.height + dp[j].getMaxHeight() > max) {
 						max = curBlock.height + dp[j].getMaxHeight();
+						dp[i].setIndex(j);
 					}
 				}
 			}
