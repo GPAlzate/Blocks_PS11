@@ -220,6 +220,7 @@ public class Blocks {
 
 		// Initializing DP table
 		int[] dp = new int[numBlocks];
+		
 
 		// Going from the top of the tower to the bottom
 		// Mercy: should we instead go bottom to top? since
@@ -278,7 +279,7 @@ public class Blocks {
 		int numBlocks = setOfBlocks.indexOf(b) + 1;
 
 		// Initializing DP table
-		int[] dp = new int[numBlocks];
+		BlockPair[] dp = new BlockPair[numBlocks];
 
 		// Going from the top of the tower to the bottom
 		// Mercy: should we instead go bottom to top? since
@@ -290,8 +291,7 @@ public class Blocks {
 			System.out.println("Current block: " + curBlock);
 
 			// initialize current block's height to be its max Height in the DP table
-			int max = dp[i] = curBlock.height();
-			;
+			int max = curBlock.height();
 
 			// Going through the previous blocks
 			for (int j = i - 1; j >= 0; j--) {
@@ -302,21 +302,21 @@ public class Blocks {
 				if (curBlock.stackableOn(setOfBlocks.get(j))) {
 
 					// Checking if this is the new max for the current block
-					if (curBlock.height + dp[j] > max) {
-						max = curBlock.height + dp[j];
+					if (curBlock.height + dp[j].getMaxHeight() > max) {
+						max = curBlock.height + dp[j].getMaxHeight();
 					}
 				}
 			}
 
-			dp[i] = max;
+			dp[i].setMaxHeight(max);
 			System.out.println("Max for this block on top: " + max);
 		}
 
 		// find maximum of all entries in DP table to get final solution
 		int finalMax = 0;
 		for (int i = 0; i < dp.length; i++) {
-			if (dp[i] > finalMax) {
-				finalMax = dp[i];
+			if (dp[i].getMaxHeight() > finalMax) {
+				finalMax = dp[i].getMaxHeight();
 			}
 		}
 
@@ -445,20 +445,28 @@ public class Blocks {
 	
 	class BlockPair {
 		
-		private Block block;
+		private int maxHeight;
 		private int index;
 		
-		public BlockPair(Block block, int index) {
-			this.block = block;
+		public BlockPair(int maxHeight, int index) {
+			this.maxHeight = maxHeight;
 			this.index = index;
 		}
 		
-		public Block getBlock() {
-			return block;
+		public int getMaxHeight() {
+			return maxHeight;
 		}
 		
 		public int getIndex() {
 			return index;
+		}
+		
+		public void setMaxHeight(int newHeight) {
+			maxHeight = newHeight;
+		}
+		
+		public void setIndex(int newIndex) {
+			index = newIndex;
 		}
 	}
 }
