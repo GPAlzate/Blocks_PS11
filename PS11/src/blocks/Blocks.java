@@ -61,18 +61,23 @@ public class Blocks {
 			for (int i = 0; i < runner.setOfBlocks.size(); i++) {
 				System.out.println(runner.setOfBlocks.get(i));
 			}
-
+			
+			/*//for testing recursive solution
 			ArrayList<Integer> maxHeights = new ArrayList<Integer>();
 			for (int i = 0; i < runner.setOfBlocks.size(); i++) {
 				maxHeights.add(runner.maxHeightRecur(runner.setOfBlocks.get(i)));
 			}
+			*/
 
 			/*
 			 * for debugging for(int i = 0; i < maxHeights.size(); i++) {
 			 * System.out.println(maxHeights.get(i)); }
 			 */
+			
+			Block lastBlock = runner.setOfBlocks.get(runner.setOfBlocks.size()-1);
+			int maxHeight = runner.maxHeightDP(lastBlock);
 
-			int maxHeight = runner.finalMaxHeight(maxHeights); // run alg here
+			//int maxHeight = runner.finalMaxHeight(maxHeights); // this was for recursive solution
 			System.out.println(maxHeight);
 
 			/*
@@ -154,7 +159,8 @@ public class Blocks {
 	}
 
 	/**
-	 * Recursive solution Given a block b which is on top of a stack of boxes, finds
+	 * Recursive solution 
+	 * Given a block b which is on top of a stack of boxes, finds
 	 * max possible height of tower
 	 * 
 	 */
@@ -202,7 +208,8 @@ public class Blocks {
 	}
 
 	/**
-	 * Dynamic programming approach to solving this problem.
+	 * Dynamic programming approach to finding max height
+	 * of a tower using only certain blocks
 	 * 
 	 * @param b
 	 *            the block which is on top of a tower of blocks
@@ -214,7 +221,9 @@ public class Blocks {
 		int[] dp = new int[setOfBlocks.size()];
 
 		// Going from the top of the tower to the bottom
-		for (int i = dp.length; i > 0; i--) {
+		//Mercy: should we instead go bottom to top? since
+		//top of tower is our solution - unsure though
+		for (int i = dp.length-1; i > 0; i--) {
 
 			// Preparing to calculate current max
 			int max = 0;
@@ -223,6 +232,7 @@ public class Blocks {
 			Block curBlock = setOfBlocks.get(i);
 
 			// Going through the previous blocks
+			//Mercy: should this start at i-1 instead of i+1?
 			for (int j = i + 1; i > dp.length; i--) {
 				if (curBlock.stackableOn(setOfBlocks.get(j))) {
 
@@ -235,14 +245,16 @@ public class Blocks {
 
 			dp[i] = max;
 		}
-		int max = 0;
+		
+		//find maximum of all entries in DP table to get final solution
+		int finalMax = 0;
 		for (int i = 0; i < dp.length; i++) {
-			if (dp[i] > max) {
-				max = dp[i];
+			if (dp[i] > finalMax) {
+				finalMax = dp[i];
 			}
 		}
 
-		return max;
+		return finalMax;
 	}
 
 	/**
