@@ -75,7 +75,7 @@ public class Blocks {
 			 */
 			
 			Block lastBlock = runner.setOfBlocks.get(runner.setOfBlocks.size()-1);
-			int maxHeight = runner.maxHeightDP(lastBlock);
+			int maxHeight = runner.maxHeightDPM(lastBlock);
 
 			//int maxHeight = runner.finalMaxHeight(maxHeights); // this was for recursive solution
 			System.out.println(maxHeight);
@@ -233,6 +233,7 @@ public class Blocks {
 
 			// Going through the previous blocks
 			//Mercy: should this start at i-1 instead of i+1?
+			//also, it decrements i instead of j, so j never changes
 			for (int j = i + 1; i > dp.length; i--) {
 				if (curBlock.stackableOn(setOfBlocks.get(j))) {
 
@@ -244,6 +245,66 @@ public class Blocks {
 			}
 
 			dp[i] = max;
+		}
+		
+		//find maximum of all entries in DP table to get final solution
+		int finalMax = 0;
+		for (int i = 0; i < dp.length; i++) {
+			if (dp[i] > finalMax) {
+				finalMax = dp[i];
+			}
+		}
+
+		return finalMax;
+	}
+	
+	/**
+	 * Mercy messing around with solution
+	 * 
+	 * Dynamic programming approach to finding max height
+	 * of a tower using only certain blocks
+	 * 
+	 * @param b
+	 *            the block which is on top of a tower of blocks
+	 * @return the max height of the tower
+	 */
+	public int maxHeightDPM(Block b) {
+		int numBlocks = setOfBlocks.indexOf(b);
+		
+		// Initializing DP table
+		int[] dp = new int[numBlocks];
+
+		// Going from the top of the tower to the bottom
+		//Mercy: should we instead go bottom to top? since
+		//top of tower is our solution - unsure though
+		for (int i = 0; i < dp.length; i++) {
+
+			
+
+			// Current block
+			Block curBlock = setOfBlocks.get(i);
+			System.out.println("Current block: " + curBlock);
+			
+			//initialize current block's height to be its max Height in the DP table
+			int max = dp[i] = curBlock.height();;
+
+			// Going through the previous blocks
+			for (int j = i-1; j >= 0; j--) {
+				
+				//check if current block is stackable on one of the blocks prior to it
+				//if it is, then we can simple add the current block's height
+				//to the entry in the table for the prior block
+				if (curBlock.stackableOn(setOfBlocks.get(j))) {
+
+					// Checking if this is the new max for the current block
+					if (curBlock.height + dp[j] > max) {
+						max = curBlock.height + dp[j];
+					}
+				}
+			}
+
+			dp[i] = max;
+			System.out.println("Max for this block on top: " + max);
 		}
 		
 		//find maximum of all entries in DP table to get final solution
