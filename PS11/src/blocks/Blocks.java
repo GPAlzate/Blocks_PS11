@@ -53,51 +53,41 @@ public class Blocks {
 			}
 
 			runner.setOfBlocks = runner.getVariations(blockTypes);
-			
+
 			// sort the blocks in order from largest area to smallest
 			Collections.sort(runner.setOfBlocks);
 
-			// for debugging
-			for (int i = 0; i < runner.setOfBlocks.size(); i++) {
-				System.out.println(runner.setOfBlocks.get(i));
-			}
-
 			Block lastBlock = runner.setOfBlocks.get(runner.setOfBlocks.size() - 1);
-			
-			int[] results = runner.maxHeightDPM(lastBlock);
-			int maxHeight = results[0];
-			int indexOfTopBlock = results[1];
-			
-			// FIXME
-			System.out.println(maxHeight);
-			System.out.println(indexOfTopBlock);
-			
-			int i = results[1];
-			ArrayList<Block> blocks = new ArrayList<Block>();
-			while (i > 0) {
-				blocks.add(runner.setOfBlocks.get(i));
-			}
-			
-			System.out.println("The tallest tower has " + blocks.size() + " blocks and a height of " + results[0]);
 
-			/*
-			 * ArrayList<Block> tallestTowerBlocks = new ArrayList<>(); //store tallest
-			 * blocks somehow in an array int numBlocks = tallestTowerBlocks.size();
-			 * 
-			 * readIn.close();
-			 * 
-			 * BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to
-			 * write to outfile
-			 * 
-			 * writer.write(numBlocks); //first line of outfile should be number of blocks
-			 * in tallest tower writer.newLine();
-			 * 
-			 * // loop which writes out all the blocks in the tallest possible tower to the
-			 * outfile for(int i = 0; i < numBlocks; i++) {
-			 * writer.write(tallestTowerBlocks.get(i).toString()); writer.newLine(); }
-			 * 
-			 * writer.close();
-			 */
+			// Running the algorithm
+			int[] results = runner.maxHeightDP(lastBlock);
+
+			// Tracing the blocks in the tower using the pointers
+			int curIndex = results[1];
+			ArrayList<Block> blocksInTower = new ArrayList<Block>();
+			blocksInTower.add(runner.setOfBlocks.get(curIndex));
+			while (curIndex > 0) {
+				curIndex = runner.dp[curIndex].getIndex();
+				blocksInTower.add(runner.setOfBlocks.get(curIndex));
+			}
+
+			// Printing the results
+			System.out
+					.println("The tallest tower has " + blocksInTower.size() + " blocks and a height of " + results[0]);
+
+			readIn.close();
+
+			// Writing the results
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
+			writer.write(String.valueOf(blocksInTower.size()));
+			writer.newLine();
+			for (int i = blocksInTower.size() - 1; i >= 0; i--) {
+				writer.write(blocksInTower.get(i).toString());
+				writer.newLine();
+			}
+
+			writer.close();
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -177,8 +167,8 @@ public class Blocks {
 	 * @return array, index 0 is the max height of the tower, index 1 is the pointer
 	 *         to the topmost block in the tower with the maximum height
 	 */
-	public int[] maxHeightDPM(Block b) {
-		
+	public int[] maxHeightDP(Block b) {
+
 		int numBlocks = setOfBlocks.indexOf(b) + 1;
 
 		// Initializing DP table, which will contain the maximum height for each tower
@@ -191,9 +181,6 @@ public class Blocks {
 
 			// Current block
 			Block curBlock = setOfBlocks.get(i);
-
-			// FIXME
-			System.out.println("Current block: " + curBlock);
 
 			// Initialize current block's height to be its max Height in the DP table
 			int max = curBlock.height();
@@ -219,9 +206,6 @@ public class Blocks {
 
 			// Assigning the maximum height for the tower containing this block
 			dp[i].setMaxHeight(max);
-
-			// FIXME
-			System.out.println("Max for this block on top: " + max);
 		}
 
 		// Find maximum of all entries in DP table to get final solution
@@ -234,18 +218,7 @@ public class Blocks {
 			}
 		}
 
-		return new int[] {finalMax, indexOfTopBlock};
-	}
-	
-	public void printResults(int[] results) {
-		
-		int i = results[1];
-		ArrayList<Block> blocks = new ArrayList<Block>();
-		while (i > 0) {
-			blocks.add(setOfBlocks.get(i));
-		}
-		
-		System.out.println("The tallest tower has " + blocks.size() + " blocks and a height of " + results[0]);
+		return new int[] { finalMax, indexOfTopBlock };
 	}
 
 	/**
@@ -368,28 +341,58 @@ public class Blocks {
 		}
 	}
 
+	/**
+	 * Class that saves the max height of the tower containing a given block and the
+	 * pointer to the previous block in that tower
+	 */
 	class BlockPair {
 
 		private int maxHeight;
 		private int index;
 
+		/**
+		 * Constructor
+		 * 
+		 * @param maxHeight
+		 *            height of the tower containing the block
+		 * @param index
+		 *            index to the previous block in the tower
+		 */
 		public BlockPair(int maxHeight, int index) {
 			this.maxHeight = maxHeight;
 			this.index = index;
 		}
 
+		/**
+		 * @return height of tower
+		 */
 		public int getMaxHeight() {
 			return maxHeight;
 		}
 
+		/**
+		 * @return index of previous block in tower
+		 */
 		public int getIndex() {
 			return index;
 		}
 
+		/**
+		 * Saves the height of the tower containing the block
+		 * 
+		 * @param newHeight
+		 *            the height of the tower
+		 */
 		public void setMaxHeight(int newHeight) {
 			maxHeight = newHeight;
 		}
 
+		/**
+		 * Saves the index of the previous block in the tower
+		 * 
+		 * @param newIndex
+		 *            the index of the previous block in the tower
+		 */
 		public void setIndex(int newIndex) {
 			index = newIndex;
 		}
