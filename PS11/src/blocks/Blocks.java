@@ -14,7 +14,7 @@ import java.util.Scanner;
  * on the base of the lower block
  * 
  * @authors Kristine Cho and Mercy Bickell
- * @version 3/12/20
+ * @version 3/15/20
  *
  */
 public class Blocks {
@@ -114,6 +114,8 @@ public class Blocks {
 	/**
 	 * Recursive solution: Given a block b which is on top of a stack of boxes,
 	 * finds max possible height of tower
+	 * 
+	 * We used this to try and formulate the DP solution
 	 */
 	public int maxHeightRecur(Block b) {
 		int bIndex = setOfBlocks.indexOf(b);
@@ -158,6 +160,15 @@ public class Blocks {
 		return max;
 	}
 
+	/**
+	 * Dynamic programming approach to finding max height of a tower using only
+	 * certain blocks
+	 * 
+	 * @param b
+	 *            the block which is on top of a tower of blocks
+	 * @return array, index 0 is the max height of the tower, index 1 is the pointer
+	 *         to the topmost block in the tower with the maximum height
+	 */
 	public int[] maxHeightDP(Block b) {
 
 		int numBlocks = setOfBlocks.indexOf(b) + 1;
