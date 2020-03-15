@@ -20,6 +20,7 @@ import java.util.Scanner;
 public class Blocks {
 
 	ArrayList<Block> setOfBlocks = new ArrayList<>();
+	BlockPair[] dp;
 
 	/**
 	 * reads in input and runs the algorithm to find the tallest possible tower
@@ -53,51 +54,40 @@ public class Blocks {
 
 			runner.setOfBlocks = runner.getVariations(blockTypes);
 
-			// now do stuff with all the possible orientations of the blocks
 			// sort the blocks in order from largest area to smallest
 			Collections.sort(runner.setOfBlocks);
 
-			// for debugging
-			for (int i = 0; i < runner.setOfBlocks.size(); i++) {
-				System.out.println(runner.setOfBlocks.get(i));
+			Block lastBlock = runner.setOfBlocks.get(runner.setOfBlocks.size() - 1);
+
+			// Running the algorithm
+			int[] results = runner.maxHeightDP(lastBlock);
+
+			// Tracing the blocks in the tower using the pointers
+			int curIndex = results[1];
+			ArrayList<Block> blocksInTower = new ArrayList<Block>();
+			blocksInTower.add(runner.setOfBlocks.get(curIndex));
+			while (curIndex > 0) {
+				curIndex = runner.dp[curIndex].getIndex();
+				blocksInTower.add(runner.setOfBlocks.get(curIndex));
 			}
 
-			/*
-			 * //for testing recursive solution ArrayList<Integer> maxHeights = new
-			 * ArrayList<Integer>(); for (int i = 0; i < runner.setOfBlocks.size(); i++) {
-			 * maxHeights.add(runner.maxHeightRecur(runner.setOfBlocks.get(i))); }
-			 */
+			// Printing the results
+			System.out
+					.println("The tallest tower has " + blocksInTower.size() + " blocks and a height of " + results[0]);
 
-			/*
-			 * for debugging for(int i = 0; i < maxHeights.size(); i++) {
-			 * System.out.println(maxHeights.get(i)); }
-			 */
+			readIn.close();
 
-			Block lastBlock = runner.setOfBlocks.get(runner.setOfBlocks.size() - 1);
-			int maxHeight = runner.maxHeightDPM(lastBlock);
+			// Writing the results
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
+			writer.write(String.valueOf(blocksInTower.size()));
+			writer.newLine();
+			for (int i = blocksInTower.size() - 1; i >= 0; i--) {
+				writer.write(blocksInTower.get(i).toString());
+				writer.newLine();
+			}
 
-			// int maxHeight = runner.finalMaxHeight(maxHeights); // this was for recursive
-			// solution
-			System.out.println(maxHeight);
+			writer.close();
 
-			/*
-			 * ArrayList<Block> tallestTowerBlocks = new ArrayList<>(); //store tallest
-			 * blocks somehow in an array int numBlocks = tallestTowerBlocks.size();
-			 * 
-			 * readIn.close();
-			 * 
-			 * BufferedWriter writer = new BufferedWriter(new FileWriter(outfile)); //to
-			 * write to outfile
-			 * 
-			 * writer.write(numBlocks); //first line of outfile should be number of blocks
-			 * in tallest tower writer.newLine();
-			 * 
-			 * // loop which writes out all the blocks in the tallest possible tower to the
-			 * outfile for(int i = 0; i < numBlocks; i++) {
-			 * writer.write(tallestTowerBlocks.get(i).toString()); writer.newLine(); }
-			 * 
-			 * writer.close();
-			 */
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -121,47 +111,9 @@ public class Blocks {
 		return allBlocks;
 	}
 
-	// FIXME This is not correct. Delete for submission
-	public int maxHeightRecurK(ArrayList<Block> blocksInTower) {
-
-		// Base case where list is empty
-		if (blocksInTower.isEmpty()) {
-			return 0;
-		}
-
-		// Base case where there is only 1 block
-		else if (blocksInTower.size() == 1) {
-			return (blocksInTower.get(0).height);
-		}
-
-		else {
-
-			// The current block we are working with
-			Block curBlock = blocksInTower.get(blocksInTower.size() - 1);
-
-			// If the current block is greater in area than the last block on the tower, add
-			// it to the tower
-			if (curBlock.area > blocksInTower.get(blocksInTower.size() - 2).area) {
-
-				// Adds the height of this block to the height of the tower
-				return curBlock.height
-						+ maxHeightRecurK((ArrayList<Block>) blocksInTower.subList(0, blocksInTower.size() - 2));
-			}
-
-			// If the current block is not greater in area than the last block on the tower,
-			// the height of the tower remains the same
-			else {
-
-				// Returns the height of the tower without this block
-				return maxHeightRecurK((ArrayList<Block>) blocksInTower.subList(0, blocksInTower.size() - 2));
-			}
-		}
-	}
-
 	/**
-	 * Recursive solution Given a block b which is on top of a stack of boxes, finds
-	 * max possible height of tower
-	 * 
+	 * Recursive solution: Given a block b which is on top of a stack of boxes,
+	 * finds max possible height of tower
 	 */
 	public int maxHeightRecur(Block b) {
 		int bIndex = setOfBlocks.indexOf(b);
@@ -206,97 +158,29 @@ public class Blocks {
 		return max;
 	}
 
-	/**
-	 * Dynamic programming approach to finding max height of a tower using only
-	 * certain blocks
-	 * 
-	 * @param b
-	 *            the block which is on top of a tower of blocks
-	 * @return the max height of the tower
-	 */
-	public int maxHeightDP(Block b) {
+	public int[] maxHeightDP(Block b) {
 
 		int numBlocks = setOfBlocks.indexOf(b) + 1;
 
-		// Initializing DP table
-		int[] dp = new int[numBlocks];
-		
+		// Initializing DP table, which will contain the maximum height for each tower
+		// that contains the block and the pointer to the previous block in the tower,
+		// if it exists
+		dp = new BlockPair[numBlocks];
 
-		// Going from the top of the tower to the bottom
-		// Mercy: should we instead go bottom to top? since
-		// top of tower is our solution - unsure though
+		// Going from the bottom of the tower to the top
 		for (int i = 0; i < dp.length; i++) {
 
 			// Current block
 			Block curBlock = setOfBlocks.get(i);
-			System.out.println("Current block: " + curBlock);
 
-			
-			//initialize current block's height to be its max Height in the DP table
-			int max= curBlock.height();
-
-			// Going through the previous blocks
-			for (int j = i - 1; j >= 0; j--) {
-
-				// check if current block is stackable on one of the blocks prior to it
-				// if it is, then we can simple add the current block's height
-				// to the entry in the table for the prior block
-				if (curBlock.stackableOn(setOfBlocks.get(j))) {
-
-					// Checking if this is the new max for the current block
-					if (curBlock.height + dp[j] > max) {
-						max = curBlock.height + dp[j];
-					}
-				}
-			}
-
-			dp[i] = max;
-			System.out.println("Max for this block on top: " + max);
-		}
-
-		// find maximum of all entries in DP table to get final solution
-		int finalMax = 0;
-		for (int i = 0; i < dp.length; i++) {
-			if (dp[i] > finalMax) {
-				finalMax = dp[i];
-			}
-		}
-
-		return finalMax;
-	}
-
-	/**
-	 * Mercy messing around with solution
-	 * 
-	 * Dynamic programming approach to finding max height of a tower using only
-	 * certain blocks
-	 * 
-	 * @param b
-	 *            the block which is on top of a tower of blocks
-	 * @return the max height of the tower
-	 */
-	public int maxHeightDPM(Block b) {
-		int numBlocks = setOfBlocks.indexOf(b) + 1;
-
-		// Initializing DP table
-		BlockPair[] dp = new BlockPair[numBlocks];
-
-		// Going from the top of the tower to the bottom
-		// Mercy: should we instead go bottom to top? since
-		// top of tower is our solution - unsure though
-		for (int i = 0; i < dp.length; i++) {
-
-			// Current block
-			Block curBlock = setOfBlocks.get(i);
-			System.out.println("Current block: " + curBlock);
-
-			// initialize current block's height to be its max Height in the DP table
+			// Initialize current block's height to be its max Height in the DP table
 			int max = curBlock.height();
+			dp[i] = new BlockPair(max, i);
 
 			// Going through the previous blocks
 			for (int j = i - 1; j >= 0; j--) {
 
-				// check if current block is stackable on one of the blocks prior to it
+				// Check if current block is stackable on one of the blocks prior to it
 				// if it is, then we can simple add the current block's height
 				// to the entry in the table for the prior block
 				if (curBlock.stackableOn(setOfBlocks.get(j))) {
@@ -304,23 +188,28 @@ public class Blocks {
 					// Checking if this is the new max for the current block
 					if (curBlock.height + dp[j].getMaxHeight() > max) {
 						max = curBlock.height + dp[j].getMaxHeight();
+
+						// If it is, setting the pointer to the previous block on the tower
+						dp[i].setIndex(j);
 					}
 				}
 			}
 
+			// Assigning the maximum height for the tower containing this block
 			dp[i].setMaxHeight(max);
-			System.out.println("Max for this block on top: " + max);
 		}
 
-		// find maximum of all entries in DP table to get final solution
+		// Find maximum of all entries in DP table to get final solution
 		int finalMax = 0;
+		int indexOfTopBlock = -1;
 		for (int i = 0; i < dp.length; i++) {
 			if (dp[i].getMaxHeight() > finalMax) {
 				finalMax = dp[i].getMaxHeight();
+				indexOfTopBlock = i;
 			}
 		}
 
-		return finalMax;
+		return new int[] { finalMax, indexOfTopBlock };
 	}
 
 	/**
@@ -442,29 +331,59 @@ public class Blocks {
 			return length + " " + width + " " + height;
 		}
 	}
-	
+
+	/**
+	 * Class that saves the max height of the tower containing a given block and the
+	 * pointer to the previous block in that tower
+	 */
 	class BlockPair {
-		
+
 		private int maxHeight;
 		private int index;
-		
+
+		/**
+		 * Constructor
+		 * 
+		 * @param maxHeight
+		 *            height of the tower containing the block
+		 * @param index
+		 *            index to the previous block in the tower
+		 */
 		public BlockPair(int maxHeight, int index) {
 			this.maxHeight = maxHeight;
 			this.index = index;
 		}
-		
+
+		/**
+		 * @return height of tower
+		 */
 		public int getMaxHeight() {
 			return maxHeight;
 		}
-		
+
+		/**
+		 * @return index of previous block in tower
+		 */
 		public int getIndex() {
 			return index;
 		}
-		
+
+		/**
+		 * Saves the height of the tower containing the block
+		 * 
+		 * @param newHeight
+		 *            the height of the tower
+		 */
 		public void setMaxHeight(int newHeight) {
 			maxHeight = newHeight;
 		}
-		
+
+		/**
+		 * Saves the index of the previous block in the tower
+		 * 
+		 * @param newIndex
+		 *            the index of the previous block in the tower
+		 */
 		public void setIndex(int newIndex) {
 			index = newIndex;
 		}
